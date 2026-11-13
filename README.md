@@ -2,7 +2,7 @@
 
 Proyecto académico de comercio electrónico para la venta de periféricos tecnológicos y licencias digitales. La plataforma combina una tienda en línea con puntos y una ruleta de recompensas para motivar la participación y las compras recurrentes.
 
-> **Estado del proyecto:** documentación y definición inicial. El desarrollo aún no ha comenzado.
+> **Estado del proyecto:** prototipo frontend inicial. Los datos del catálogo son demostrativos; todavía no hay backend, base de datos, autenticación ni procesamiento real de pedidos.
 
 ## Objetivo
 
@@ -56,17 +56,36 @@ Los siguientes valores son propuestas iniciales y deben revisarse con el cliente
 
 ## Tecnologías previstas
 
-- **Frontend y backend:** PHP.
+- **Frontend del prototipo:** PHP para servir el catálogo, HTML, CSS y JavaScript para la interfaz y sus interacciones locales.
+- **Backend del producto:** PHP (pendiente de desarrollo).
 - **Base de datos:** pendiente de selección por el equipo.
-- **Prototipo:** se definirá a partir de las historias de usuario y los criterios de aceptación priorizados.
 
-No hay instrucciones de instalación o ejecución todavía porque el desarrollo no ha comenzado.
+## Ejecutar el prototipo
+
+Se necesita PHP instalado. Desde la carpeta raíz del repositorio, ejecuta:
+
+```bash
+php -S localhost:8000
+```
+
+Luego abre `http://localhost:8000` en el navegador. El carrito se conserva en el almacenamiento local del navegador; estos datos no son cuentas ni pedidos reales.
+
+## Estructura actual
+
+```text
+├── index.php          # Página de inicio y catálogo de demostración
+├── assets/
+│   ├── app.js          # Filtros y carrito local de demostración
+│   └── styles.css      # Estilos responsivos
+├── README.md           # Presentación general del proyecto
+└── GUIA_SCRUM.md       # Guía práctica para organizar los Sprints
+```
 
 ## Equipo
 
 | Integrante | Rol | Responsabilidad |
 | --- | --- | --- |
-| Fabian  | Scrum Master | Facilitar el proceso Scrum, acompañar al equipo y ayudar a remover impedimentos. |
+| Fabian | Scrum Master | Facilitar el proceso Scrum, acompañar al equipo y ayudar a remover impedimentos. |
 | Parra | Product Owner | Representar al cliente, aclarar necesidades y priorizar el Product Backlog. |
 | Silva | Desarrollador | Colaborar en el diseño, desarrollo e integración del producto. |
 | Maicol | Desarrollador | Colaborar en el diseño, desarrollo e integración del producto. |
@@ -85,6 +104,10 @@ No hay instrucciones de instalación o ejecución todavía porque el desarrollo 
 
 El equipo trabajará con Scrum. Parra priorizará las historias de usuario con base en las necesidades del cliente; el equipo de desarrollo seleccionará y organizará el trabajo de cada Sprint. Al terminar cada Sprint, se revisará el incremento y se recogerán comentarios para ajustar el backlog.
 
+## Organización del trabajo
+
+Consulta [GUIA_SCRUM.md](GUIA_SCRUM.md) para ver el roadmap sugerido por Sprints, ideas para preparar historias y recomendaciones para facilitar las ceremonias.
+
 ## Próximo hito
 
-Confirmar con el cliente las propuestas pendientes, crear y priorizar las historias de usuario, definir sus criterios de aceptación y diseñar el prototipo que servirá de guía para frontend y backend.
+Revisar el prototipo con Parra y el cliente, confirmar las reglas pendientes y convertir el primer objetivo acordado en historias pequeñas con criterios de aceptación.
