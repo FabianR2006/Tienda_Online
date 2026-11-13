@@ -66,7 +66,7 @@ No hay instrucciones de instalación o ejecución todavía porque el desarrollo 
 
 | Integrante | Rol | Responsabilidad |
 | --- | --- | --- |
-| Fabian | Scrum Master | Facilitar el proceso Scrum, acompañar al equipo y ayudar a remover impedimentos. |
+| Fabian  | Scrum Master | Facilitar el proceso Scrum, acompañar al equipo y ayudar a remover impedimentos. |
 | Parra | Product Owner | Representar al cliente, aclarar necesidades y priorizar el Product Backlog. |
 | Silva | Desarrollador | Colaborar en el diseño, desarrollo e integración del producto. |
 | Maicol | Desarrollador | Colaborar en el diseño, desarrollo e integración del producto. |
