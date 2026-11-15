@@ -1,0 +1,10 @@
+/* Favoritos — PixelLoot (archivo aparte para no tocar styles.css) */
+.fav-button{position:absolute;right:10px;bottom:10px;z-index:3;width:32px;height:32px;display:grid;place-items:center;padding:0;border-radius:50%;border:1px solid #ffffff2a;background:#151722cc;color:#d9d4ec;transition:.2s}
+.fav-button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;transition:.2s}
+.fav-button:hover{color:#f0749c;border-color:#f0749c88;transform:scale(1.08)}
+.fav-button.is-fav{color:#f0749c;border-color:#f0749c88;background:#3a1c2acc}
+.fav-button.is-fav svg{fill:currentColor}
+.fav-button:focus-visible{outline:2px solid #ad91ff;outline-offset:2px}
+.fav-chip.is-active{background:#302748;border-color:#8d70e3;color:#e1d6ff}
+.fav-hidden{display:none}
+.fav-empty{grid-column:1/-1;margin:0;padding:40px 16px;text-align:center;color:#a3a5b5;font-size:12px;line-height:1.7}

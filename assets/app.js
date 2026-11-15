@@ -4,17 +4,34 @@
   const cart = JSON.parse(localStorage.getItem('pixelLootCart') || '{}');
   let activeFilter = 'Todos';
   let offersOnly = false;
+  let searchTerm = '';
   const money = value => '$' + Number(value).toLocaleString('es-CO');
+  const normalizeText = value => String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es');
   const save = () => localStorage.setItem('pixelLootCart', JSON.stringify(cart));
   const visibleProducts = () => {
-    let list = products.filter(p => (activeFilter === 'Todos' || p.category === activeFilter) && (!offersOnly || p.discount > 0));
+    const normalizedSearch = normalizeText(searchTerm.trim());
+    let list = products.filter(p => {
+      const matchesCategory = activeFilter === 'Todos' || p.category === activeFilter;
+      const matchesOffer = !offersOnly || p.discount > 0;
+      const matchesSearch = !normalizedSearch || normalizeText(`${p.name} ${p.category}`).includes(normalizedSearch);
+      return matchesCategory && matchesOffer && matchesSearch;
+    });
     const sort = document.querySelector('#sortSelect').value;
     if (sort === 'price-low') list.sort((a,b) => a.price - b.price);
     if (sort === 'price-high') list.sort((a,b) => b.price - a.price);
     return list;
   };
   const renderProducts = () => {
-    grid.innerHTML = visibleProducts().map(p => `<article class="product-card" data-product-card="${p.id}" tabindex="0" aria-label="Ver detalle de ${p.name}"><div class="product-visual ${p.tone}"><span class="product-tag">${p.tag}</span>${p.discount ? `<span class="product-discount">-${p.discount}%</span>` : ''}<span class="product-emoji">${p.icon}</span></div><div class="product-content"><div class="product-category">${p.category} · ${p.type}</div><h3 class="product-title">${p.name}</h3><div class="product-rating">★ ${p.rating} <span>(128 opiniones)</span></div><div class="product-bottom"><div class="price"><strong>${money(p.price)}</strong>${p.old ? `<del>${money(p.old)}</del>` : ''}</div><button class="add-button" data-add="${p.id}" aria-label="Agregar ${p.name} al carrito">+</button></div><button class="detail-link" data-open-product="${p.id}">Ver detalle <span>→</span></button></div></article>`).join('') || '<p>No hay productos en esta categoría.</p>';
+    const matches = visibleProducts();
+    if (!matches.length) {
+      grid.replaceChildren();
+      const empty = document.createElement('p');
+      empty.className = 'catalog-empty';
+      empty.textContent = searchTerm.trim() ? `No encontramos productos que coincidan con “${searchTerm.trim()}”.` : 'No hay productos disponibles en esta selección.';
+      grid.append(empty);
+      return;
+    }
+    grid.innerHTML = matches.map(p => `<article class="product-card" data-product-card="${p.id}" tabindex="0" aria-label="Ver detalle de ${p.name}"><div class="product-visual ${p.tone}"><span class="product-tag">${p.tag}</span>${p.discount ? `<span class="product-discount">-${p.discount}%</span>` : ''}<span class="product-emoji">${p.icon}</span></div><div class="product-content"><div class="product-category">${p.category} · ${p.type}</div><h3 class="product-title">${p.name}</h3><div class="product-rating">★ ${p.rating} <span>(128 opiniones)</span></div><div class="product-bottom"><div class="price"><strong>${money(p.price)}</strong>${p.old ? `<del>${money(p.old)}</del>` : ''}</div><button class="add-button" data-add="${p.id}" aria-label="Agregar ${p.name} al carrito">+</button></div><button class="detail-link" data-open-product="${p.id}">Ver detalle <span>→</span></button></div></article>`).join('');
   };
   const countCart = () => Object.values(cart).reduce((sum, qty) => sum + qty, 0);
   const renderCart = () => {
@@ -33,11 +50,39 @@
   const modal = document.querySelector('#demoModal');
   const modalBackdrop = document.createElement('div'); modalBackdrop.className = 'modal-backdrop'; document.body.append(modalBackdrop);
   const productModal = document.querySelector('#productModal');
+  // ----- Vistos recientemente -----
+  // Guarda los IDs (el más reciente primero) en localStorage, sin repetidos y con tope.
+  const RECENT_KEY = 'pixelLootRecent';
+  const RECENT_MAX = 6;
+  const recentSection = document.querySelector('#recientes');
+  const recentList = document.querySelector('#recentList');
+  const loadRecent = () => {
+    try {
+      const ids = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+      return Array.isArray(ids) ? ids.map(Number).filter(id => products.some(p => p.id === id)).slice(0, RECENT_MAX) : [];
+    } catch (error) { return []; }
+  };
+  let recent = loadRecent();
+  const saveRecent = () => localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
+  const renderRecent = () => {
+    recentSection.hidden = recent.length === 0;
+    recentList.innerHTML = recent.map(id => {
+      const p = products.find(item => item.id === id);
+      return `<button type="button" class="recent-card" data-open-product="${p.id}" aria-label="Ver de nuevo ${p.name}"><span class="product-visual ${p.tone}"><span class="product-emoji">${p.icon}</span></span><span class="recent-info"><span class="product-category">${p.category}</span><span class="recent-name">${p.name}</span><span class="recent-price">${money(p.price)}</span></span></button>`;
+    }).join('');
+  };
+  const addRecent = id => {
+    recent = [id, ...recent.filter(item => item !== id)].slice(0, RECENT_MAX);
+    saveRecent();
+    renderRecent();
+  };
+  document.querySelector('#clearRecent').addEventListener('click', () => { recent = []; saveRecent(); renderRecent(); toast('Historial limpiado'); });
   let currentProductId = null;
   const openProduct = productId => {
     const product = products.find(item => item.id === Number(productId));
     if (!product) return;
     currentProductId = product.id;
+    addRecent(product.id);
     document.querySelector('#detailVisual').className = `detail-visual ${product.tone}`;
     document.querySelector('#detailIcon').textContent = product.icon;
     document.querySelector('#detailTag').textContent = product.tag;
@@ -78,6 +123,7 @@
     }
   });
   document.querySelector('#sortSelect').addEventListener('change', renderProducts);
+  document.querySelector('#productSearch').addEventListener('input', event => { searchTerm = event.target.value; renderProducts(); });
   const drawer = document.querySelector('#cartDrawer'), overlay = document.querySelector('#overlay');
   const closeDrawer = () => { drawer.classList.remove('open'); overlay.classList.remove('open'); };
   document.querySelector('#openCart').addEventListener('click', () => { drawer.classList.add('open'); overlay.classList.add('open'); });
@@ -92,5 +138,5 @@
   document.querySelectorAll('.main-nav a').forEach(link => link.addEventListener('click', event => { const view = link.dataset.view; if (view === 'ofertas') { event.preventDefault(); offersOnly = true; activeFilter = 'Todos'; document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.toggle('selected', chip.dataset.filter === 'Todos')); document.querySelector('#catalogTitle').innerHTML = 'Ofertas <span>para tu setup</span>'; renderProducts(); document.querySelector('#catalogo').scrollIntoView({behavior:'smooth'}); } else if (view === 'inicio') { offersOnly = false; document.querySelector('#catalogTitle').innerHTML = 'Lo más <span>jugado</span>'; renderProducts(); } document.querySelector('.main-nav').classList.remove('mobile-open'); }));
   document.querySelector('#viewAll').addEventListener('click', () => { offersOnly = false; activeFilter = 'Todos'; document.querySelector('#catalogTitle').innerHTML = 'Lo más <span>jugado</span>'; document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.toggle('selected', chip.dataset.filter === 'Todos')); renderProducts(); });
   document.querySelector('#menuToggle').addEventListener('click', () => document.querySelector('.main-nav').classList.toggle('mobile-open'));
-  renderProducts(); renderCart();
+  renderProducts(); renderCart(); renderRecent();
 })();
