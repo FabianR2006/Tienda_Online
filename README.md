@@ -18,7 +18,7 @@ Diseñar y desarrollar una tienda virtual funcional, responsiva y disponible en 
 - Simulación del pago; no se procesarán pagos reales.
 - Envío por correo de una licencia digital ficticia después de completar la compra simulada.
 - Acumulación de puntos por compras que cumplan las condiciones de entrega o canje.
-- Ruleta de recompensas que cuesta 100 puntos por giro.
+- Ruleta de recompensas que cuesta 100 puntos por giro
 - Interfaz adaptable a computadores, tabletas y teléfonos.
 
 ## Reglas de negocio acordadas
